@@ -1,6 +1,6 @@
 {
   "name": "@ixcsoft-official/n8n-nodes-ixcprovedor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n node to call IXC API.",
   "keywords": [
     "n8n-community-node-package"
@@ -39,10 +39,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ixcApi.credentials.ts"
+      "dist/credentials/ixcApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/IxcProvedor/IxcProvedor.node.ts"
+      "dist/nodes/IxcProvedor/IxcProvedor.node.js"
     ]
   },
   "devDependencies": {
