@@ -1,6 +1,6 @@
 {
   "name": "@ixcsoft-official/n8n-nodes-ixcprovedor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "n8n node to call IXC API.",
   "keywords": [
     "n8n-community-node-package"
@@ -23,7 +23,6 @@
     "pnpm": ">=9.1"
   },
   "packageManager": "pnpm@9.1.4",
-  "main": "index.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "tsc && gulp build:icons",
