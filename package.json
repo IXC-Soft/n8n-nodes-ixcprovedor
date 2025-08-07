@@ -38,7 +38,7 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ixcApi.credentials.js"
+      "dist/credentials/IxcApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/IxcProvedor/IxcProvedor.node.js"
