@@ -1,0 +1,57 @@
+name: SBOM Upload
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sbom:
+    name: Generate and Upload SBOM
+    runs-on: ixc-actions
+    continue-on-error: true
+    container:
+      image: alpine:latest
+
+    env:
+      SBOM_TARGET_PATH: '.'
+      SBOM_OUTPUT_DIR: './ci-reports'
+      SBOM_FILE_NAME: 'bom.json'
+      SYFT_VERSION: 'v1.44.0'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          echo "Installing"
+          apk add --no-cache curl ca-certificates
+          update-ca-certificates
+          curl -sSfL "https://github.com/anchore/syft/releases/download/${SYFT_VERSION}/syft_${SYFT_VERSION#v}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin syft
+          echo "Syft version: $(syft version)"
+
+      - name: Generate SBOM
+        run: |
+          echo "SBOM Path: ${SBOM_TARGET_PATH}"
+          mkdir -p ${SBOM_OUTPUT_DIR}
+          SBOM_FILE_PATH="${SBOM_OUTPUT_DIR}/${SBOM_FILE_NAME}"
+          syft scan dir:${SBOM_TARGET_PATH} -o cyclonedx-json > ${SBOM_FILE_PATH}
+          echo "SBOM gerado em ${SBOM_FILE_PATH}"
+
+      - name: Upload to Dependency-Track
+        env:
+          DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
+          DTRACK_PROJECT_UUID: ${{ secrets.DTRACK_PROJECT_UUID }}
+        run: |
+          SBOM_FILE_PATH="${SBOM_OUTPUT_DIR}/${SBOM_FILE_NAME}"
+          PROJECT_VERSION=$(echo "${{ github.sha }}" | cut -c1-8)
+          echo "Uploading to Dependency-Track"
+          curl --fail -X POST \
+            --header "Content-Type: multipart/form-data" \
+            --header "X-Api-Key: $DTRACK_API_KEY" \
+            -F "project=$DTRACK_PROJECT_UUID" \
+            -F "projectName=${{ github.event.repository.name }}" \
+            -F "projectVersion=${PROJECT_VERSION}" \
+            -F "bom=@${SBOM_FILE_PATH}" \
+            "https://dtrack.ixcsoft.com.br:8443/api/v1/bom"
