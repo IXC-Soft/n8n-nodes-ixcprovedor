@@ -10,8 +10,6 @@ jobs:
     name: Generate and Upload SBOM
     runs-on: ixc-actions
     continue-on-error: true
-    container:
-      image: alpine:latest
 
     env:
       SBOM_TARGET_PATH: '.'
@@ -23,11 +21,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install syft
         run: |
-          echo "Installing"
-          apk add --no-cache curl ca-certificates
-          update-ca-certificates
           curl -sSfL "https://github.com/anchore/syft/releases/download/${SYFT_VERSION}/syft_${SYFT_VERSION#v}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin syft
           echo "Syft version: $(syft version)"
 
