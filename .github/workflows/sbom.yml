@@ -23,8 +23,10 @@ jobs:
 
       - name: Install syft
         run: |
-          curl -sSfL "https://github.com/anchore/syft/releases/download/${SYFT_VERSION}/syft_${SYFT_VERSION#v}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin syft
-          echo "Syft version: $(syft version)"
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL "https://github.com/anchore/syft/releases/download/${SYFT_VERSION}/syft_${SYFT_VERSION#v}_linux_amd64.tar.gz" | tar -xz -C "$HOME/.local/bin" syft
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "Syft version: $("$HOME/.local/bin/syft" version)"
 
       - name: Generate SBOM
         run: |
